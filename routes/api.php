@@ -50,3 +50,13 @@ Route::post('/user/login', [UserController::class, 'login']);
     Route::put('/user/update/{id}', [UserController::class, 'updateProfile']);
 
 // });
+
+Route::group([
+
+    'middleware' => 'api',
+    'prefix' => 'auth'
+
+], function ($router) {
+
+
+});
