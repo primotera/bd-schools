@@ -51,6 +51,7 @@ Route::group([
     Route::get('/user/show/{id}', [UserController::class, 'show']);
     Route::delete('/user/delete/{id}', [UserController::class, 'destroy']);
     Route::put('/user/update/{id}', [UserController::class, 'updateProfile']);
+    
 });
 
 
