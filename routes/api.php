@@ -20,18 +20,21 @@ Route::post('/user/login', [UserController::class, 'login']);
 // --------------------------Les Routes réservées aux users ---------------------------------
 
 
-// Route::group(['prefix' => 'log', 'middleware' => ['auth', 'user']], function () {
+Route::group([
+    'prefix' => 'log',
+    'middleware' => 'user'
+], function () {
 
     Route::get('/user/profile/info', [UserController::class, 'profileInfo']);
     Route::put('/user/update/{id}', [UserController::class, 'updateProfile']);
-
-
-    
-// });
+});
 
 // --------------------------Les Routes réservées aux admins ---------------------------------
 
-// Route::group(['prefix' => 'log', 'middleware' => ['auth', 'admin']], function () {
+Route::group([
+    'prefix' => 'log',
+    'middleware' => 'admin'
+], function () {
 
     // --------------------------Les Routes liées aux rôles ---------------------------------
 
@@ -42,21 +45,20 @@ Route::post('/user/login', [UserController::class, 'login']);
     Route::delete('/role/delete/{id}', [RoleController::class, 'destroy']);
 
     // --------------------------Les Routes liées aux utilisateurs -----------------------
-    
+
     Route::post('/user/register', [UserController::class, 'register']);
     Route::get('/user/list', [UserController::class, 'index']);
     Route::get('/user/show/{id}', [UserController::class, 'show']);
     Route::delete('/user/delete/{id}', [UserController::class, 'destroy']);
     Route::put('/user/update/{id}', [UserController::class, 'updateProfile']);
-
-// });
-
-Route::group([
-
-    'middleware' => 'api',
-    'prefix' => 'auth'
-
-], function ($router) {
-
-
 });
+
+
+
+// Route::group([
+
+//     'middleware' => 'api',
+//     'prefix' => 'auth'
+
+// ], function ($router) {
+// });
