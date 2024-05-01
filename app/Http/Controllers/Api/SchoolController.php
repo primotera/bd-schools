@@ -16,16 +16,12 @@ class SchoolController extends Controller
     public function index(Request $request)
     {
         try {
-            
             return response()->json([
                 'status' => true,
                 'status_code' => 200,
                 'message' => 'Voici la listes de écoles:',
                 'data' => School::all()
             ], 200);
-        } else {
-
-        }
     }catch (Exception $e) {
             return response()->json([
                 'status' => false,
