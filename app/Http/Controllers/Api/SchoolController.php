@@ -16,6 +16,7 @@ class SchoolController extends Controller
     public function index()
     {
         try {
+            
             return response()->json([
                 'status' => true,
                 'status_code' => 200,

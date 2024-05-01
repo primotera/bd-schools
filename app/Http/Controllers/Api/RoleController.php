@@ -82,7 +82,7 @@ class RoleController extends Controller
                 return response()->json([
                     'status' => false,
                     'status_code' => 404,
-                    'message' => 'Ce role n\'existe pas',
+                    'message' => 'Ce rôle n\'existe pas',
                 ],  404);
             } else {
                 return response()->json([
