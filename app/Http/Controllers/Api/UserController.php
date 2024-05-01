@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      */
@@ -21,14 +22,14 @@ class UserController extends Controller
 
             $request->validate([
                 'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'max:255', 'email', 'unique:users'],
                 'password' => ['required', 'string', 'min:8', 'max:15'],
             ]);
 
             $user->name = $request->name;
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
-            $user->user_id = 2;
+            $user->role_id = 2;
 
             $user->save();
 
@@ -48,7 +49,7 @@ class UserController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'status' => false,
-                'statut_code' => 400,
+                'status_code' => 400,
                 'message' => 'Une erreur est survenue: ',
                 'error' => $e->getMessage()
             ], 400);
@@ -62,13 +63,24 @@ class UserController extends Controller
     {
         try {
 
-            $credentials = $request->only('email', 'password');
-            // dd($credentials);
-            if (!($token = auth()->attempt($credentials))) {
-                return response()->json([
-                    'error' => 'Les informations d\'identification ne sont pas valides.'
-                ], 401);
-            }
+            // $credentials = $request->only('email', 'password');
+    
+            $request->validate([
+                "email" => "required|email",
+                "password" => "required"
+            ]);
+
+                $token = auth()->attempt([
+                'email' => $request->email,
+                'password' => $request->password,
+            ]);
+
+            // dd($token);
+            if (!$token) {
+                    return response()->json([
+                        'error' => 'Les informations d\'identification ne sont pas valides.'
+                    ], 401);
+                }
 
             $user = auth()->user();
             return response()->json([
@@ -84,12 +96,13 @@ class UserController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'status' => false,
-                'statut_code' => 400,
+                'status_code' => 400,
                 'message' => 'Une erreur est survenue: ',
                 'error' => $e->getMessage()
             ], 400);
         }
     }
+
 
 
     public function logout(Request $request)
@@ -133,14 +146,13 @@ class UserController extends Controller
         try {
             $request->validate([
                 'name' => ['sometimes', 'string', 'max:255'],
-                'email' => ['sometimes', 'string', 'email', 'max:255'],
+                'email' => ['sometimes', 'string', 'email', 'max:255', 'unique:users'],
                 'password' => ['sometimes', 'string', 'min:8', 'max:15'],
             ]);
     
-            $user->name = $request->input('name', $user->name);
-            $user->email = $request->input('email', $user->email);
-            $user->phone = $request->input('phone', $user->phone);
-            $user->adresse = $request->input('adresse', $user->adresse);
+            $user->name = $request->$user->name;
+            $user->email = $request->$user->email;
+            $user->phone = $request->$user->phone;
     
             if ($request->filled('password')) {
                 $user->password = Hash::make($request->password);
@@ -162,6 +174,7 @@ class UserController extends Controller
             ], 400);
         }
     }
+    
     
     /**
      * Update the specified resource in storage.

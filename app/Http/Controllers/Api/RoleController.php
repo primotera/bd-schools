@@ -13,15 +13,20 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
+            
+            $user = $request->user();            
+            // dd($user);
+            if ($user->role_id != 1) {
             return response()->json([
                 'status' => true,
                 'status_code' => 200,
                 'message' => 'Voici la liste de rôles:',
                 'data' => Role::all()
             ], 200);
+        }
         } catch (Exception $e) {
             return response()->json([
                 'status' => false,

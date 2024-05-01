@@ -13,7 +13,7 @@ class SchoolController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
             
@@ -23,7 +23,10 @@ class SchoolController extends Controller
                 'message' => 'Voici la listes de écoles:',
                 'data' => School::all()
             ], 200);
-        } catch (Exception $e) {
+        } else {
+
+        }
+    }catch (Exception $e) {
             return response()->json([
                 'status' => false,
                 'status_code' => 500,
