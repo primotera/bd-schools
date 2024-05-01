@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use Exception;
-use App\Models\Role;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Exception; 
+use App\Models\FormationGrade;
 
-
-class RoleController extends Controller
+class FormationGradeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,11 +15,13 @@ class RoleController extends Controller
     public function index()
     {
         try {
+            $formationGrades = FormationGrade::all();
+
             return response()->json([
                 'status' => true,
                 'status_code' => 200,
-                'message' => 'Voici la liste de rôles:',
-                'data' => Role::all()
+                'message' => 'Voici la liste des grades de formation:',
+                'data' => $formationGrades
             ], 200);
         } catch (Exception $e) {
             return response()->json([
@@ -35,7 +36,7 @@ class RoleController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function create()
     {
         //
     }
@@ -46,25 +47,24 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         try {
+
             $request->validate([
-                'name' => ['required','string','max:255'],
-                'description' => ['required','string','max:255'],
-            ]);
-            $role = new Role;
-            $role->name = $request->name;
-            $role->description = $request->description;
-            $role->save();
+                'formation_grade' => ['required','string','max:255'],
+             ]);
+            $formationGrade = new FormationGrade;
+            $formationGrade->formation_grade = $request->formation_grade;
+            $formationGrade->save();
             return response()->json([
                 'status' => true,
                 'statut_code' => 201,
-                'message' => 'Rôle créé avec succès.',
-                'data' => $role
+                'message' => 'La grade de formation est créé avec succès.',
+                'data' => $formationGrade
             ], 201);
         } catch (Exception $e) {
             return response()->json([
                 'status' => false,
                 'statut_code' => 400,
-                'message' => 'Rôle non créé',
+                'message' => 'Grade de formation non créé',
                 'error' => $e->getMessage()
             ], 400);
         }
@@ -76,20 +76,20 @@ class RoleController extends Controller
     public function show(string $id)
     {
         try {
-            $role = Role::find($id);
+            $formationGrade = FormationGrade::find($id);
 
-            if ($role === null) {
+            if ($formationGrade === null) {
                 return response()->json([
                     'status' => false,
                     'status_code' => 404,
-                    'message' => 'Ce role n\'existe pas',
+                    'message' => 'Cette grade de formationn\'existe pas',
                 ],  404);
             } else {
                 return response()->json([
                     'status' => true,
                     'status_code' => 200,
-                    'message' => 'Voici le rôle: ',
-                    'data' => $role
+                    'message' => 'Voici la grade de formation: ',
+                    'data' => $formationGrade
                 ], 200);
             }
         } catch (Exception $e) {
@@ -113,44 +113,32 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, string $id)
     {
         try {
-            $role = Role::find($id);
+            $formationGrade = FormationGrade::find($id);
 
-                // dd($role);
-                if ($role === null) {
-                    return response()->json([
-                        "status" => false,
-                        "status_code" => 404,
-                        "message" => "Ce role n'existe pas.",
-                    ],    404);
-                } else {
+            $request->validate([
+                'formation_grade' => ['required','string','max:255'],
+             ]);
 
-                    $request->validate([
-                        'name' => ['required','string','max:255'],
-                        'description' => ['required','string','max:255'],
-                    ]);
+            $formationGrade->formation_grade = $request->formation_grade;
 
-                    $role->name = $request->name;
-                    $role->description = $request->description;
+            $formationGrade->save();
 
-                    $role->update();
-
-                    return response()->json([
-                        'status' => true,
-                        'status_code' => 200,
-                        'message' => 'Le nom du role a été modifié avec succès',
-                        'role' => $role,
-                    ],  200);
-                }
+            return response()->json([
+                'status' => true,
+                'statut_code' => 201,
+                'message' => 'La grade de formation est modifiée avec succès.',
+                'data' => $formationGrade
+            ], 201);
         } catch (Exception $e) {
             return response()->json([
-                "status" => false,
-                "status_code" => 500,
-                "message" => "Une erreur est survenue.",
-                "error"   => $e->getMessage()
-            ],  500);
+                'status' => false,
+                'statut_code' => 400,
+                'message' => 'Grade de formation est non modifiée',
+                'error' => $e->getMessage()
+            ], 400);
         }
     }
 
@@ -161,20 +149,20 @@ class RoleController extends Controller
     {
         try {
 
-            $role = Role::find($id);
+            $formationGrade = FormationGrade::find($id);
 
-                if (!$role) {
+                if (!$formationGrade) {
                     return response()->json([
                         'status' => false,
                         'status_code' => 404,
-                        'message' => 'Ce rôle n\'existe pas',
+                        'message' => 'Cette grade de formationn\'existe pas',
                     ],   404);
                 } else {
-                    $role->delete();
+                    $formationGrade->delete();
                     return response()->json([
                         'status' => true,
                         'status_code' => 200,
-                        'message' => 'Ce rôle a été supprimé avec succès',
+                        'message' => 'Cette grade de formationa été supprimée avec succès',
                     ],    200);
                 }
         } catch (Exception $e) {

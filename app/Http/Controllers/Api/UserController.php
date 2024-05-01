@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -27,7 +28,7 @@ class UserController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
-            $user->role_id = 2;
+            $user->user_id = 2;
 
             $user->save();
 
@@ -62,25 +63,24 @@ class UserController extends Controller
         try {
 
             $credentials = $request->only('email', 'password');
-        // dd($credentials);
-        if (!($token = auth()->attempt($credentials))) {
+            // dd($credentials);
+            if (!($token = auth()->attempt($credentials))) {
+                return response()->json([
+                    'error' => 'Les informations d\'identification ne sont pas valides.'
+                ], 401);
+            }
+
+            $user = auth()->user();
             return response()->json([
-                'error' => 'Les informations d\'identification ne sont pas valides.'
-            ], 401);
-        }
+                'status_code' => 200,
+                'status_message' => "Utilisateur connecté avec succès",
+                'user' => $user,
+                'token_type' => 'bearer',
+                'expires_in' => auth()->factory()->getTTL() * 120,
+                'token' =>  $token,
 
-        $user = auth()->user();
-        return response()->json([
-            'status_code' => 200,
-            'status_message' => "Utilisateur connecté avec succès",
-            'user' => $user,
-            'token_type' => 'bearer',
-            // 'expires_in' => auth()->factory()->getTTL() * 120
-            'token' =>  $token,
-            
-        // return $this->respondWithToken($token);
-        ]);
-
+                // return $this->respondWithToken($token);
+            ]);
         } catch (Exception $e) {
             return response()->json([
                 'status' => false,
@@ -91,21 +91,38 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function logout(Request $request)
     {
-        //
+        try {
+            Auth::logout();
+    
+            return response()->json([
+                'status' => true,
+                'status_code' => 200,
+                'message' => "Déconnexion réussie",
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'status_code' => 500,
+                'message' => 'Une erreur est survenue: ' . $e->getMessage(),
+            ], 500);
+        }
     }
+    
 
     /**
      * Display the specified resource.
      */
     public function profileInfo()
     {
-        return response()->json(auth()->user());
+        $user = auth()->user()->only([
+            'id', 'name', 'email'
+        ]); 
+        return response()->json($user);
     }
+    
 
 
     /**
@@ -113,40 +130,92 @@ class UserController extends Controller
      */
     public function updateProfile(Request $request, User $user)
     {
-
-        // $user = auth()->user();
-        // dd($user);
-        $request->validate([
-            'name' => ['sometimes', 'string', 'max:255'],
-            'email' => ['sometimes', 'string', 'max:255'],
-            'password' => ['sometimes', 'string', 'email', 'min:8', 'max:15'],
-        ]);
-
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->phone = $request->phone;
-        $user->adresse = $request->adresse;
-
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+        try {
+            $request->validate([
+                'name' => ['sometimes', 'string', 'max:255'],
+                'email' => ['sometimes', 'string', 'email', 'max:255'],
+                'password' => ['sometimes', 'string', 'min:8', 'max:15'],
+            ]);
+    
+            $user->name = $request->input('name', $user->name);
+            $user->email = $request->input('email', $user->email);
+            $user->phone = $request->input('phone', $user->phone);
+            $user->adresse = $request->input('adresse', $user->adresse);
+    
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
+            }
+    
+            $user->save();
+    
+            return response()->json([
+                'status' => true,
+                'status_code' => 201,
+                'message' => "Profil utilisateur mis à jour avec succès",
+                'data' =>  $user,
+            ], 201);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'status_code' => 400,
+                'message' => 'Une erreur est survenue: ' . $e->getMessage(),
+            ], 400);
         }
-
-        $user->save();
     }
-
+    
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function listUsers()
     {
-        //
+        try {
+            $users = User::all();
+
+            return response()->json([
+                'status' => true,
+                'status_code' => 200,
+                'message' => 'Liste des utilisateurs récupérée avec succès',
+                'data' => $users,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'status_code' => 500,
+                'message' => 'Une erreur est survenue: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, $id)
     {
-        //
+        try {
+
+            $user = User::find($id);
+
+                if (!$user) {
+                    return response()->json([
+                        'status' => false,
+                        'status_code' => 404,
+                        'message' => 'Cet utilisateur n\'existe pas',
+                    ],   404);
+                } else {
+                    $user->delete();
+                    return response()->json([
+                        'status' => true,
+                        'status_code' => 200,
+                        'message' => 'Cet utilisateur a été supprimé avec succès',
+                    ],    200);
+                }
+        } catch (Exception $e) {
+            return response()->json([
+                "status" => false,
+                "status_code" => 500,
+                "message" => "Une erreur est survenue.",
+                "error"   => $e->getMessage()
+            ],   500);
+        }
     }
 }
