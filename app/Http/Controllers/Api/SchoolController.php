@@ -16,19 +16,12 @@ class SchoolController extends Controller
     public function index(Request $request)
     {
         try {
-            
-            dd($request);
-            $user = $request->user();
-            if ($user->role_id != 1) {
             return response()->json([
                 'status' => true,
                 'status_code' => 200,
                 'message' => 'Voici la listes de écoles:',
                 'data' => School::all()
             ], 200);
-        } else {
-
-        }
     }catch (Exception $e) {
             return response()->json([
                 'status' => false,
@@ -53,17 +46,11 @@ class SchoolController extends Controller
     public function store(CreateSchoolRequest $request)
     {
         try {
-            // $request->validate([
-            //     'school_name' => ['required', 'string', 'max:255'],
-            //     'phone' => ['required', 'integer', 'max:14'],
-            //     'mobile' => ['required', 'integer', 'max:14'],
-            //     'email' => ['required', 'string', 'email', 'max:55'],
-            //     'address' => ['required', 'string', 'max:255'],
-            //     'website' => ['required', 'string', 'max:255'],
-            // ]);
+            
             $school = new School;
 
             $school->school_name = $request->school_name;
+            $school->user_id = $request->user_id;
             $school->phone = $request->phone;
             $school->mobile = $request->mobile;
             $school->email = $request->email;
@@ -141,6 +128,7 @@ class SchoolController extends Controller
             } else {
 
                 $school->school_name = $request->school_name;
+                $school->user_id = $request->user_id;
                 $school->phone = $request->phone;
                 $school->mobile = $request->mobile;
                 $school->email = $request->email;

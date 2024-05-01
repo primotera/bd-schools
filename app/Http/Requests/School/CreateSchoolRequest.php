@@ -27,7 +27,7 @@ class CreateSchoolRequest extends FormRequest
             'school_name' => ['required', 'string', 'max:255'],
             'phone' =>  ['required','regex:/^(70|75|76|77|78|33|30)[0-9]{7}$/'],
             'mobile' =>  ['required','regex:/^(70|75|76|77|78|33|30)[0-9]{7}$/'],
-            'email' => ['required', 'string', 'email', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'address' => ['required', 'string', 'max:255'],
             'website' => ['required', 'string', 'max:255'],
         ];

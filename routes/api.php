@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\FormationGradeController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -27,14 +28,16 @@ Route::group([
 
     Route::get('/user/profile/info', [UserController::class, 'profileInfo']);
     Route::put('/user/update/{id}', [UserController::class, 'updateProfile']);
-});
+
+
+    
+ });
 
 // --------------------------Les Routes réservées aux admins ---------------------------------
 
-Route::group([
-    'prefix' => 'log',
-    'middleware' => 'admin'
-], function () {
+Route::group(['prefix' => 'log', 
+'middleware' => 'admin'],
+ function () {
 
     // --------------------------Les Routes liées aux rôles ---------------------------------
 
@@ -43,23 +46,15 @@ Route::group([
     Route::put('/role/update/{id}', [RoleController::class, 'update']);
     Route::get('/role/show/{id}', [RoleController::class, 'show']);
     Route::delete('/role/delete/{id}', [RoleController::class, 'destroy']);
-
-    // --------------------------Les Routes liées aux utilisateurs -----------------------
-
-    Route::post('/user/register', [UserController::class, 'register']);
-    Route::get('/user/list', [UserController::class, 'index']);
-    Route::get('/user/show/{id}', [UserController::class, 'show']);
-    Route::delete('/user/delete/{id}', [UserController::class, 'destroy']);
-    Route::put('/user/update/{id}', [UserController::class, 'updateProfile']);
     
-});
+     // --------------------------Les Routes liées aux utilisateurs -----------------------
 
-
-
-// Route::group([
-
-//     'middleware' => 'api',
-//     'prefix' => 'auth'
-
-// ], function ($router) {
-// });
+     Route::post('/user/register', [UserController::class, 'register']);
+     Route::get('/user/profile/info', [UserController::class, 'profileInfo']);
+     Route::put('/user/update/{id}', [UserController::class, 'updateProfile']);
+     Route::put('/user/logout', [UserController::class, 'logout']);
+     Route::get('/user/list', [UserController::class, 'listUsers']);
+     Route::delete('/user/delete/{id}', [UserController::class, 'destroy']);
+     
+     
+ });
