@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Api;
 use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -128,52 +129,97 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
+    // public function profileInfo()
+    // {
+    //     $user = auth()->user()->only([
+    //         'id', 'name', 'email', 
+    //         'role' => $user->role->name,
+    //     ]); 
+    //     return response()->json($user);
+    // }
     public function profileInfo()
-    {
-        $user = auth()->user()->only([
-            'id', 'name', 'email'
-        ]); 
-        return response()->json($user);
+{
+    $user = auth()->user()->only(['id', 'name', 'email']);
+
+    // Si vous avez une relation 'role' chargée pour l'utilisateur, vous pouvez l'ajouter ici
+    if (auth()->user()->role) {
+        $user['role'] = auth()->user()->role->name;
     }
+
+    return response()->json($user);
+}
     
 
 
     /**
      * Show the form for editing the specified resource.
      */
+    // public function updateProfile(Request $request, User $user)
+    // {
+    //     try {
+    //         $request->validate([
+    //             'name' => ['sometimes', 'string', 'max:255'],
+    //             'email' => ['sometimes', 'string', 'email', 'max:255', 'unique:users'],
+    //             'password' => ['sometimes', 'string', 'min:8', 'max:15'],
+    //         ]);
+    
+    //         $user->name = $request->$user->name;
+    //         $user->email = $request->$user->email;
+    
+    //         if ($request->filled('password')) {
+    //             $user->password = Hash::make($request->password);
+    //         }
+    
+    //         $user->update();
+    
+    //         return response()->json([
+    //             'status' => true,
+    //             'status_code' => 201,
+    //             'message' => "Profil utilisateur mis à jour avec succès",
+    //             'data' =>  $user,
+    //         ], 201);
+    //     } catch (Exception $e) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'status_code' => 400,
+    //             'message' => 'Une erreur est survenue: ' . $e->getMessage(),
+    //         ], 400);
+    //     }
+    // }
+
     public function updateProfile(Request $request, User $user)
-    {
-        try {
-            $request->validate([
-                'name' => ['sometimes', 'string', 'max:255'],
-                'email' => ['sometimes', 'string', 'email', 'max:255', 'unique:users'],
-                'password' => ['sometimes', 'string', 'min:8', 'max:15'],
-            ]);
-    
-            $user->name = $request->$user->name;
-            $user->email = $request->$user->email;
-            $user->phone = $request->$user->phone;
-    
-            if ($request->filled('password')) {
-                $user->password = Hash::make($request->password);
-            }
-    
-            $user->save();
-    
-            return response()->json([
-                'status' => true,
-                'status_code' => 201,
-                'message' => "Profil utilisateur mis à jour avec succès",
-                'data' =>  $user,
-            ], 201);
-        } catch (Exception $e) {
-            return response()->json([
-                'status' => false,
-                'status_code' => 400,
-                'message' => 'Une erreur est survenue: ' . $e->getMessage(),
-            ], 400);
+{
+    try {
+        $request->validate([
+            'name' => ['sometimes', 'string', 'max:255'],
+            'email' => ['sometimes', 'string', 'email', 'max:255'],
+            'password' => ['sometimes', 'string', 'min:8', 'max:15'],
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
         }
+
+        $user->update();
+
+        return response()->json([
+            'status' => true,
+            'status_code' => 201,
+            'message' => "Profil utilisateur mis à jour avec succès",
+            'data' =>  $user,
+        ], 201);
+    } catch (Exception $e) {
+        return response()->json([
+            'status' => false,
+            'status_code' => 400,
+            'message' => 'Une erreur est survenue: ' . $e->getMessage(),
+        ], 400);
     }
+}
+
     
     
     /**

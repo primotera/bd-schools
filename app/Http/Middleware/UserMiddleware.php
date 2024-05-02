@@ -22,7 +22,8 @@ class UserMiddleware
         } else {
             return response()->json([
                 'status code' => 403, 
-                'message' => "Sorry, vous n'êtes pas autorisé à accéder à cette ressource réservé aux utilisateurs de ce système."
+                'message' => "Sorry, Vous devez être connecté en tant qu'utilisateur pour avoir accès à cette ressource."
+                // 'message' => "Sorry, vous n'êtes pas autorisé à accéder à cette ressource réservé aux utilisateurs de ce système."
             ], 403);
         }
     }
