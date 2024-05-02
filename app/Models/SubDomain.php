@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class SubDomain extends Model
 {
     use HasFactory;
+    
+    public function formation()
+    {
+        return $this->hasMany(Formation::class);
+    }
 }

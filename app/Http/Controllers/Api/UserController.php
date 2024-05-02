@@ -182,13 +182,21 @@ class UserController extends Controller
     public function listUsers()
     {
         try {
-            $users = User::all();
+            $users = User::all()->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role->name,
+                ];
+            });
+            // dd($users);
 
             return response()->json([
                 'status' => true,
                 'status_code' => 200,
                 'message' => 'Liste des utilisateurs récupérée avec succès',
-                'data' => $users,
+                'data' => $users
             ], 200);
         } catch (Exception $e) {
             return response()->json([

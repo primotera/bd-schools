@@ -13,6 +13,16 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+    
+    public function school()
+    {
+        return $this->hasMany(School::class);
+    }
+    
     /**
      * The attributes that are mass assignable.
      *
