@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('mobile');
             $table->string('email');
             $table->string('address');
-            $table->string('website');
+            $table->string('website')->nullable();
 
             $table->timestamps();
         });

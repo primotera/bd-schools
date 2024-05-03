@@ -27,9 +27,9 @@ class CreateSchoolRequest extends FormRequest
             'school_name' => ['required', 'string', 'max:255'],
             'phone' =>  ['required','regex:/^(70|75|76|77|78|33|30)[0-9]{7}$/'],
             'mobile' =>  ['required','regex:/^(70|75|76|77|78|33|30)[0-9]{7}$/'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:schools'],
             'address' => ['required', 'string', 'max:255'],
-            'website' => ['required', 'string', 'max:255'],
+            'website' => ['string', 'max:255'],
         ];
     }
 
@@ -64,7 +64,7 @@ class CreateSchoolRequest extends FormRequest
             
             'address.required' => 'L\'adresse est requise.',
             
-            'website.required' => 'L\'adresse du site Web est requise.',
+            // 'website.required' => 'L\'adresse du site Web est requise.',
         ];
     }
 }

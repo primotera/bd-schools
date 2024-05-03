@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 
 class RoleController extends Controller
@@ -16,17 +17,17 @@ class RoleController extends Controller
     public function index(Request $request)
     {
         try {
-            
-            $user = $request->user();            
+
+            $user = $request->user();
             // dd($user);
             if ($user->role_id == 1) {
-            return response()->json([
-                'status' => true,
-                'status_code' => 200,
-                'message' => 'Voici la liste de rôles:',
-                'data' => Role::all()
-            ], 200);
-        }
+                return response()->json([
+                    'status' => true,
+                    'status_code' => 200,
+                    'message' => 'Voici la liste de rôles:',
+                    'data' => Role::all()
+                ], 200);
+            }
         } catch (Exception $e) {
             return response()->json([
                 'status' => false,
@@ -52,14 +53,15 @@ class RoleController extends Controller
     {
         try {
             $request->validate([
-                'name' => ['required','string','max:255'],
-                'description' => ['required','string','max:255'],
+                'name' => ['required', 'string', 'max:255', 'unique:roles'],
+                'description' => ['required', 'string', 'max:255'],
             ]);
             $role = new Role;
             $role->name = $request->name;
             $role->description = $request->description;
             $role->save();
             return response()->json([
+                'user_connecté' => Auth::user()->only(['name']),
                 'status' => true,
                 'statut_code' => 201,
                 'message' => 'Rôle créé avec succès.',
@@ -85,12 +87,14 @@ class RoleController extends Controller
 
             if ($role === null) {
                 return response()->json([
+                    'user_connecté' => Auth::user()->only(['name']),
                     'status' => false,
                     'status_code' => 404,
                     'message' => 'Ce rôle n\'existe pas',
                 ],  404);
             } else {
                 return response()->json([
+                    'user_connecté' => Auth::user()->only(['name']),
                     'status' => true,
                     'status_code' => 200,
                     'message' => 'Voici le rôle: ',
@@ -123,32 +127,34 @@ class RoleController extends Controller
         try {
             $role = Role::find($id);
 
-                // dd($role);
-                if ($role === null) {
-                    return response()->json([
-                        "status" => false,
-                        "status_code" => 404,
-                        "message" => "Ce role n'existe pas.",
-                    ],    404);
-                } else {
+            // dd($role);
+            if ($role === null) {
+                return response()->json([
+                    'user_connecté' => Auth::user()->only(['name']),
+                    "status" => false,
+                    "status_code" => 404,
+                    "message" => "Ce role n'existe pas.",
+                ],    404);
+            } else {
 
-                    $request->validate([
-                        'name' => ['required','string','max:255'],
-                        'description' => ['required','string','max:255'],
-                    ]);
+                $request->validate([
+                    'name' => ['required', 'string', 'max:255', 'unique:roles'],
+                    'description' => ['required', 'string', 'max:255'],
+                ]);
 
-                    $role->name = $request->name;
-                    $role->description = $request->description;
+                $role->name = $request->name;
+                $role->description = $request->description;
 
-                    $role->update();
+                $role->update();
 
-                    return response()->json([
-                        'status' => true,
-                        'status_code' => 200,
-                        'message' => 'Le nom du role a été modifié avec succès',
-                        'role' => $role,
-                    ],  200);
-                }
+                return response()->json([
+                    'user_connecté' => Auth::user()->only(['name']),
+                    'status' => true,
+                    'status_code' => 200,
+                    'message' => 'Le nom du role a été modifié avec succès',
+                    'role' => $role,
+                ],  200);
+            }
         } catch (Exception $e) {
             return response()->json([
                 "status" => false,
@@ -168,20 +174,22 @@ class RoleController extends Controller
 
             $role = Role::find($id);
 
-                if (!$role) {
-                    return response()->json([
-                        'status' => false,
-                        'status_code' => 404,
-                        'message' => 'Ce rôle n\'existe pas',
-                    ],   404);
-                } else {
-                    $role->delete();
-                    return response()->json([
-                        'status' => true,
-                        'status_code' => 200,
-                        'message' => 'Ce rôle a été supprimé avec succès',
-                    ],    200);
-                }
+            if (!$role) {
+                return response()->json([
+                    'user_connecté' => Auth::user()->only(['name']),
+                    'status' => false,
+                    'status_code' => 404,
+                    'message' => 'Ce rôle n\'existe pas',
+                ],   404);
+            } else {
+                $role->delete();
+                return response()->json([
+                    'user_connecté' => Auth::user()->only(['name']),
+                    'status' => true,
+                    'status_code' => 200,
+                    'message' => 'Ce rôle a été supprimé avec succès',
+                ],    200);
+            }
         } catch (Exception $e) {
             return response()->json([
                 "status" => false,

@@ -51,7 +51,7 @@ Route::group([
 Route::group(
     [
         'prefix' => 'log',
-        'middleware' => 'admin', 'user'
+        'middleware' => ['admin', 'user']
     ],
     function () {
 

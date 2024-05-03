@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use Exception;
+use App\Models\School;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\School\CreateSchoolRequest;
-use App\Models\School;
 
 class SchoolController extends Controller
 {
@@ -60,15 +61,16 @@ class SchoolController extends Controller
             $school->save();
 
             return response()->json([
+                'user_connecté' => Auth::user()->only(['name']),
                 'status' => true,
-                'statut_code' => 201,
+                'status_code' => 201,
                 'message' => 'Ecole enregistré avec succès.',
                 'data' => $school
             ], 201);
         } catch (Exception $e) {
             return response()->json([
                 'status' => false,
-                'statut_code' => 500,
+                'status_code' => 500,
                 'message' => 'Ecole non enregistré.',
                 'error' => $e->getMessage()
             ], 500);
@@ -84,6 +86,7 @@ class SchoolController extends Controller
             $school = School::find($id);
             // dd($school);
             return response()->json([
+                'user_connecté' => Auth::user()->only(['name']),
                 'status' => true,
                 'statut code' => 200,
                 'message' => "Voici l'école.",
@@ -91,8 +94,9 @@ class SchoolController extends Controller
             ], 200);
         } catch (Exception $e) {
             return response()->json([
+                'user_connecté' => Auth::user()->only(['name']),
                 'status' => false,
-                'statut_code' => 404,
+                'status_code' => 404,
                 'message' => "Cet école n'existe pas."
             ],  404);
             return response()->json([
@@ -121,8 +125,9 @@ class SchoolController extends Controller
             $school = School::find($id);
             if ($school === null) {
                 return response()->json([
+                    'user_connecté' => Auth::user()->only(['name']),
                     "status" => false,
-                    "statut_code" => 404,
+                    "status_code" => 404,
                     "message" => "Cet école n'existe pas.",
                 ],  404);
             } else {
@@ -138,8 +143,9 @@ class SchoolController extends Controller
                 $school->update();
 
                 return response()->json([
+                    'user_connecté' => Auth::user()->only(['name']),
                     'status' => true,
-                    'statut_code' => 200,
+                    'status_code' => 200,
                     'statut_message' => 'Informations école modifiées avec succès',
                     'data' => $school,
                 ],   200);
@@ -164,8 +170,9 @@ class SchoolController extends Controller
 
             if ($school === null) {
                 return response()->json([
+                    'user_connecté' => Auth::user()->only(['name']),
                     'status' => false,
-                    'statut_code' => 404,
+                    'status_code' => 404,
                     'statut_message' => 'Cet école n\'existe pas',
                 ],   404);
             } else {
@@ -173,10 +180,10 @@ class SchoolController extends Controller
                 $school->delete();
 
                 return response()->json([
+                    'user_connecté' => Auth::user()->only(['name']),
                     'status' => true,
-                    'statut_code' => 200,
+                    'status_code' => 200,
                     'statut_message' => 'Cet école a été supprimée avec succès',
-                    'data' => $school,
                 ],    200);
             }
         } catch (Exception $e) {
