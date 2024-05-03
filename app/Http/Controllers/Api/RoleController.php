@@ -19,7 +19,7 @@ class RoleController extends Controller
             
             $user = $request->user();            
             // dd($user);
-            if ($user->role_id != 1) {
+            if ($user->role_id == 1) {
             return response()->json([
                 'status' => true,
                 'status_code' => 200,

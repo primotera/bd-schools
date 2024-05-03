@@ -38,6 +38,7 @@ class UserController extends Controller
                 return response()->json([
                     'status' => true,
                     'status_code' => 201,
+                    'user_connecté' => Auth::user()->only(['name']),
                     'message' => "Inscription de l'utilisateur reussie",
                     'data' =>  $user,
                 ], 201);
@@ -65,23 +66,23 @@ class UserController extends Controller
         try {
 
             // $credentials = $request->only('email', 'password');
-    
+
             $request->validate([
                 "email" => "required|email",
                 "password" => "required"
             ]);
 
-                $token = auth()->attempt([
+            $token = auth()->attempt([
                 'email' => $request->email,
                 'password' => $request->password,
             ]);
 
             // dd($token);
             if (!$token) {
-                    return response()->json([
-                        'error' => 'Les informations d\'identification ne sont pas valides.'
-                    ], 401);
-                }
+                return response()->json([
+                    'error' => 'Les informations d\'identification ne sont pas valides.'
+                ], 401);
+            }
 
             $user = auth()->user();
             return response()->json([
@@ -110,11 +111,12 @@ class UserController extends Controller
     {
         try {
             Auth::logout();
-    
+
             return response()->json([
                 'status' => true,
                 'status_code' => 200,
                 'message' => "Déconnexion réussie",
+                'user_déconnecté' => Auth::user()->only(['name']),
             ], 200);
         } catch (Exception $e) {
             return response()->json([
@@ -124,104 +126,63 @@ class UserController extends Controller
             ], 500);
         }
     }
-    
+
 
     /**
      * Display the specified resource.
      */
-    // public function profileInfo()
-    // {
-    //     $user = auth()->user()->only([
-    //         'id', 'name', 'email', 
-    //         'role' => $user->role->name,
-    //     ]); 
-    //     return response()->json($user);
-    // }
     public function profileInfo()
-{
-    $user = auth()->user()->only(['id', 'name', 'email']);
+    {
+        $user = auth()->user()->only(['id', 'name', 'email']);
 
-    // Si vous avez une relation 'role' chargée pour l'utilisateur, vous pouvez l'ajouter ici
-    if (auth()->user()->role) {
-        $user['role'] = auth()->user()->role->name;
+        if (auth()->user()->role) {
+            $user['role'] = auth()->user()->role->name;
+        }
+
+        return response()->json($user);
     }
 
-    return response()->json($user);
-}
-    
 
 
     /**
      * Show the form for editing the specified resource.
      */
-    // public function updateProfile(Request $request, User $user)
-    // {
-    //     try {
-    //         $request->validate([
-    //             'name' => ['sometimes', 'string', 'max:255'],
-    //             'email' => ['sometimes', 'string', 'email', 'max:255', 'unique:users'],
-    //             'password' => ['sometimes', 'string', 'min:8', 'max:15'],
-    //         ]);
-    
-    //         $user->name = $request->$user->name;
-    //         $user->email = $request->$user->email;
-    
-    //         if ($request->filled('password')) {
-    //             $user->password = Hash::make($request->password);
-    //         }
-    
-    //         $user->update();
-    
-    //         return response()->json([
-    //             'status' => true,
-    //             'status_code' => 201,
-    //             'message' => "Profil utilisateur mis à jour avec succès",
-    //             'data' =>  $user,
-    //         ], 201);
-    //     } catch (Exception $e) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'status_code' => 400,
-    //             'message' => 'Une erreur est survenue: ' . $e->getMessage(),
-    //         ], 400);
-    //     }
-    // }
 
     public function updateProfile(Request $request, User $user)
-{
-    try {
-        $request->validate([
-            'name' => ['sometimes', 'string', 'max:255'],
-            'email' => ['sometimes', 'string', 'email', 'max:255'],
-            'password' => ['sometimes', 'string', 'min:8', 'max:15'],
-        ]);
+    {
+        try {
+            $request->validate([
+                'name' => ['sometimes', 'string', 'max:255'],
+                'email' => ['sometimes', 'string', 'email', 'max:255'],
+                'password' => ['sometimes', 'string', 'min:8', 'max:15'],
+            ]);
 
-        $user->name = $request->name;
-        $user->email = $request->email;
+            $user->name = $request->name;
+            $user->email = $request->email;
 
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
+            }
+
+            $user->update();
+
+            return response()->json([
+                'status' => true,
+                'status_code' => 201,
+                'message' => "Profil utilisateur mis à jour avec succès",
+                'data' =>  $user,
+            ], 201);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'status_code' => 400,
+                'message' => 'Une erreur est survenue: ' . $e->getMessage(),
+            ], 400);
         }
-
-        $user->update();
-
-        return response()->json([
-            'status' => true,
-            'status_code' => 201,
-            'message' => "Profil utilisateur mis à jour avec succès",
-            'data' =>  $user,
-        ], 201);
-    } catch (Exception $e) {
-        return response()->json([
-            'status' => false,
-            'status_code' => 400,
-            'message' => 'Une erreur est survenue: ' . $e->getMessage(),
-        ], 400);
     }
-}
 
-    
-    
+
+
     /**
      * Update the specified resource in storage.
      */
@@ -241,6 +202,7 @@ class UserController extends Controller
             return response()->json([
                 'status' => true,
                 'status_code' => 200,
+                'user_connecté' => Auth::user()->only(['name']),
                 'message' => 'Liste des utilisateurs récupérée avec succès',
                 'data' => $users
             ], 200);
@@ -262,20 +224,21 @@ class UserController extends Controller
 
             $user = User::find($id);
 
-                if (!$user) {
-                    return response()->json([
-                        'status' => false,
-                        'status_code' => 404,
-                        'message' => 'Cet utilisateur n\'existe pas',
-                    ],   404);
-                } else {
-                    $user->delete();
-                    return response()->json([
-                        'status' => true,
-                        'status_code' => 200,
-                        'message' => 'Cet utilisateur a été supprimé avec succès',
-                    ],    200);
-                }
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 404,
+                    'message' => 'Cet utilisateur n\'existe pas',
+                ],   404);
+            } else {
+                $user->delete();
+                return response()->json([
+                    'status' => true,
+                    'status_code' => 200,
+                    'user_connecté' => Auth::user()->only(['name']),
+                    'message' => 'Cet utilisateur a été supprimé avec succès',
+                ],    200);
+            }
         } catch (Exception $e) {
             return response()->json([
                 "status" => false,

@@ -59,7 +59,7 @@ Route::group(
 
         Route::get('/user/profile/info', [UserController::class, 'profileInfo']);
         Route::put('/user/update/{id}', [UserController::class, 'updateProfile']);
-        Route::put('/user/logout', [UserController::class, 'logout']);
+        Route::post('/user/logout', [UserController::class, 'logout']);
 
         // --------------------------Les Routes liées aux schools ---------------------------------
 
