@@ -14,11 +14,11 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         Role::factory()->create([
-            'nom' => 'Role_Admin',
+            'name' => 'Role_Admin',
             'description' => 'Rôle attribué aux administrateurs système avec des privilèges étendus sur l\'ensemble du système. Ces utilisateurs peuvent gérer les paramètres globaux et avoir un accès administratif complet.',
         ]); {
             Role::factory()->create([
-                'nom' => 'Role_User',
+                'name' => 'Role_User',
                 'description' => 'Rôle attribué aux utilisateurs simples avec des privilèges étendus sur l\'ensemble du système. Ces utilisateurs peuvent gérer les paramètres globaux et avoir un accès administratif complet.',
             ]);
         }
