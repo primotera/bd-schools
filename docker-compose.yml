@@ -32,15 +32,15 @@ services:
         ports:
             - 3306:3306
         volumes:
-            - .docker/db/data:/var/lib/mysql
+            - db_data:/var/lib/mysql
             - .docker/logs:/var/log/mysql
             - .docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
             - .docker/db/sql:/docker-entrypoint-initdb.d
         environment:
             MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: refactorian
-            MYSQL_USER: refactorian
-            MYSQL_PASSWORD: refactorian
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
 
     ####################################################################################################
     # phpMyAdmin
@@ -84,7 +84,7 @@ services:
         image: redis:latest
         command: redis-server --appendonly yes
         volumes:
-        - .docker/redis/data:/data
+        - redis_data:/data
         ports:
         - 6379:6379
 
@@ -133,3 +133,6 @@ services:
     #         - PGADMIN_DEFAULT_PASSWORD=password
     #     depends_on:
     #         - db
+volumes:
+    db_data:
+    redis_data:
