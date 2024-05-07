@@ -186,10 +186,16 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function listUsers()
+    public function listUsers(Request $request)
     {
         try {
-            $users = User::all()->map(function ($user) {
+            if(isset($request->filter)) {
+                $filter = json_decode($request->filter);
+                $users = User::whereIn("id", $filter->id)->get();
+            } else {
+                $users = User::all();
+            }
+            $users = $users->map(function ($user) {
                 return [
                     'id' => $user->id,
                     'name' => $user->name,

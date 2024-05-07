@@ -51,7 +51,7 @@ class SchoolController extends Controller
             $school = new School;
 
             $school->school_name = $request->school_name;
-            $school->user_id = $request->user_id;
+            $school->user_id = $request->user()->id;
             $school->phone = $request->phone;
             $school->mobile = $request->mobile;
             $school->email = $request->email;
@@ -133,7 +133,7 @@ class SchoolController extends Controller
             } else {
 
                 $school->school_name = $request->school_name;
-                $school->user_id = $request->user_id;
+                $school->user_id = $request->user()->id;
                 $school->phone = $request->phone;
                 $school->mobile = $request->mobile;
                 $school->email = $request->email;
